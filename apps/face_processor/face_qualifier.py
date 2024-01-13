@@ -9,7 +9,7 @@ class FaceQualifier:
 
         self.MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)
         self.ageList=['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
-        self.genderList=['M','F']
+        self.genderList=['m','f']
 
         self.ageNet=cv2.dnn.readNet(self.ageModel,self.ageProto)
         self.genderNet=cv2.dnn.readNet(self.genderModel, self.genderProto)

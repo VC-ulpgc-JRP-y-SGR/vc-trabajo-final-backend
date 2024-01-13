@@ -1,12 +1,18 @@
 import datetime
+import cv2
 from flask import Flask
+from apps.face_processor.face_detector.mediapipe import MediaPipeFaceDetector
+from apps.face_processor.face_qualifier import FaceQualifier
 from apps.statistics.model import Counter, Entrances
+from apps.streaming.model import NetworkCamera
 from db import Camera, db
 from apps.cameras.views import blueprint as cameras_blueprint
 from apps.streaming.views import blueprint as streaming_blueprint
-from apps.statistics.views import blueprint as statistics_blueprint
+from apps.statistics.views import blueprint as statistics_blueprint, entrances
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
+
+from predictor import make_prediction
 
 app = Flask(__name__)
 db.connect()
@@ -20,6 +26,12 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading", logge
 
 @app.route('/client_entered/', methods=['POST'])
 def detected_client_entered():
+    results = make_prediction()
+    entrance = Entrances.create(timestamp=datetime.datetime.now(),
+                                genre=results['genre'],
+                                age_interval=results['age'],
+                                image="")
+    print(results)
     Counter(value=1, timestamp=datetime.datetime.now()).save()
     socketio.emit('visitors', {'visitors': 'Lets dance'}, namespace='/visitors')
     return {"status": "ok"}

@@ -16,3 +16,10 @@ class Entrances(Model):
 
     class Meta:
         database = db # This model uses the "people.db" database.
+
+class Counter(Model):
+    value = IntegerField()
+    timestamp = DateTimeField()
+
+    class Meta:
+        database = db

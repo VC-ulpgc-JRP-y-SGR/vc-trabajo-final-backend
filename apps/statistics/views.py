@@ -1,6 +1,8 @@
 import datetime
 from flask import Blueprint, request
-from .model import Entrances
+
+from storage import counter
+from .model import Counter, Entrances
 from pystreamapi import Stream
 
 blueprint = Blueprint('statistics', __name__, url_prefix='/statistics')
@@ -87,4 +89,4 @@ def visitors_grouped():
         
 @blueprint.route('/visitors/current/')
 def visitors_current():
-    return valueOf(0)
+    return valueOf(sum(Stream.of(list(Counter.select())).map(lambda c: c.value).to_list()))

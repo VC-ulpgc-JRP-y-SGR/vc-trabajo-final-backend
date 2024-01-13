@@ -1,4 +1,5 @@
 from flask import Blueprint, Flask, Response, request
+from flask_socketio import emit
 from .model import NetworkCamera
 from db import Camera, db
 
@@ -16,14 +17,3 @@ def side_video_camera():
     camera = NetworkCamera(camera.ip, camera.port, 4096)
     return Response(camera.generator(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@blueprint.route('/client_entered/')
-def detected_client_entered():
-    return {
-        "status" : "ok"
-    }
-
-@blueprint.route('/client_exited/')
-def detected_client_exited():
-    return {
-        "status" : "ok"
-    }

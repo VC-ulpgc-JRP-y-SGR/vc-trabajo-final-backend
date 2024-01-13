@@ -10,6 +10,30 @@ def valueOf(value):
         "value" : value
      }
 
+@blueprint.route('/visitors/male_female_ratio/')
+def male_female_ratio():
+    male_count = Stream.of(list(Entrances.select().where(Entrances.genre == 'm'))).count()
+    female_count = Stream.of(list(Entrances.select().where(Entrances.genre == 'f'))).count()
+    return [{
+        "name": "male",
+        "value" : male_count
+    },
+    {
+        "name": "female", 
+        "value" : female_count
+    }]
+
+@blueprint.route('/visitors/age_interval_count/')
+def age_interval():
+    return Stream.of(list(Entrances.select()))\
+        .map(lambda e: e.age_interval)\
+        .group_by(lambda e: e)\
+        .map(lambda e: {
+            "name": e[0],
+            "value": len(e[1])
+        })\
+        .to_list()
+
 @blueprint.route('/entrances/')
 def entrances():
     return Stream.of(list(Entrances.select()))\

@@ -1,7 +1,6 @@
 from flask import Blueprint, Flask, Response, request
 from .model import NetworkCamera
 from db import Camera, db
-from pystreamapi import Stream
 
 blueprint = Blueprint('streaming', __name__, url_prefix='/streaming')
 
@@ -16,3 +15,15 @@ def side_video_camera():
     camera = Camera.select().where(Camera.cam_type == 'side').first()
     camera = NetworkCamera(camera.ip, camera.port, 4096)
     return Response(camera.generator(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@blueprint.route('/client_entered/')
+def detected_client_entered():
+    return {
+        "status" : "ok"
+    }
+
+@blueprint.route('/client_exited/')
+def detected_client_exited():
+    return {
+        "status" : "ok"
+    }

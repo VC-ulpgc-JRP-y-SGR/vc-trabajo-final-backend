@@ -5,13 +5,15 @@ class Entrances(Model):
     timestamp = DateTimeField()
     genre = CharField()
     age_interval = CharField()
-    image = BlobField()
+    image = CharField()
 
     def to_json(self):
         return {
+            'id' : self.id,
             'timestamp': self.timestamp,
             'genre': self.genre,
             'age_interval': self.age_interval,
+            'image': "/images/" + self.image +'/'
         }
 
     class Meta:

@@ -9,18 +9,25 @@ class NetworkCamera:
         self.ip = ip
         self.port = port
         self.buffer_size = buffer_size
+        self.sock = None
+        self.last_frame = None
 
     def connect(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.ip, self.port))
+        if self.sock is None:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.ip, self.port))
     
     def close(self):
-        self.sock.close()
+        if self.sock:
+            self.sock.close()
+            self.sock = None
     
     def _receive_frame(self):
         try:
             self.connect()
             size_data = self.sock.recv(4)
+            if not size_data:
+                raise ConnectionError("Failed to receive frame size")
             size = int.from_bytes(size_data, byteorder='big')
             data = b''
             while len(data) < size:
@@ -29,9 +36,13 @@ class NetworkCamera:
                 data += packet
 
             frame = pickle.loads(data)
-            self.close()
+            self.last_frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
             return cv2.imdecode(frame, cv2.IMREAD_COLOR)
-        except:
+        except Exception as e:
+            print(f"Error receiving frame: {e}")
+            self.close()
+            if self.last_frame is not None:
+                return self.last_frame
             return np.zeros((480, 640, 3), dtype=np.uint8)
     
     def get_frame(self):

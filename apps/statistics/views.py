@@ -38,9 +38,11 @@ def age_interval():
 
 @blueprint.route('/entrances/')
 def entrances():
-    return Stream.of(list(Entrances.select()))\
+    arr = Stream.of(list(Entrances.select()))\
         .map(lambda e: e.to_json()).\
         to_list()
+    arr.sort(key=lambda x : -x['id'])
+    return arr
 
 @blueprint.route('/entrances/', methods=['POST'])
 def create_entrance():
